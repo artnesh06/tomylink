@@ -257,9 +257,9 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
         /* ===== DESKTOP FRAME ===== */
         @media(min-width:769px){
-          .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
-          .desktop-frame{position:relative;width:450px;flex-shrink:0}
-          .phone-screen{width:450px;height:900px;border-radius:54px;overflow:hidden;box-shadow:0 0 0 12px #1a1a1a,0 0 0 14px #3a3a3a,0 50px 100px rgba(0,0,0,.6);position:relative;background:#000}
+          .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 0}
+          .desktop-frame{position:relative;width:500px;flex-shrink:0}
+          .phone-screen{width:500px;height:calc(100vh - 40px);min-height:860px;border-radius:56px;overflow:hidden;box-shadow:0 0 0 12px #1a1a1a,0 0 0 14px #3a3a3a,0 50px 100px rgba(0,0,0,.6);position:relative;background:#000}
           .phone-inner{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
           .phone-inner::-webkit-scrollbar{display:none}
           .phone-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:140px;height:38px;background:#1a1a1a;border-radius:22px;z-index:100;pointer-events:none}
