@@ -1,7 +1,36 @@
 "use client";
 import { useState, useRef } from "react";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+type LinkItem = {
+  id: string;
+  ico: string;
+  emoji: string;
+  name: string;
+  url: string;
+  img?: string;
+  price?: string;
+  time?: string;
+  seller?: string;
+  bids?: string;
+};
+
+type CatData = {
+  title: string;
+  items: LinkItem[];
+};
+
 export default function UserPage({ params }: { params: { username: string } }) {
+  // ── Edit mode state ──────────────────────────────────────────────────────
+  const isOwner = true; // TODO: replace with real auth check
+  const [editMode, setEditMode] = useState(false);
+
+  // ── Profile editable fields ──────────────────────────────────────────────
+  const [profileName, setProfileName] = useState("Anesh Artnesh");
+  const [profileBio, setProfileBio] = useState("Digital creator passionate about art, design, and visual storytelling");
+  const [editingField, setEditingField] = useState<string | null>(null);
+
+  // ── General state ────────────────────────────────────────────────────────
   const [loveCount, setLoveCount] = useState(0);
   const [selectedCat, setSelectedCat] = useState("affiliate");
   const [toastMsg, setToastMsg] = useState("");
@@ -46,22 +75,22 @@ export default function UserPage({ params }: { params: { username: string } }) {
     { key: "food",      label: "Delivery",  cls: "c5" },
   ];
 
-  const catData: Record<string, { title: string; items: Array<{ ico: string; emoji: string; name: string; url: string; img?: string; price?: string; time?: string; seller?: string; bids?: string }> }> = {
+  const [catData, setCatData] = useState<Record<string, CatData>>({
     affiliate: {
       title: "Link Terpopuler",
       items: [
-        { ico:"fi1", emoji:"🔗", name:"Shopee Affiliate",    url:"anesh.bio/shopee" },
-        { ico:"fi2", emoji:"🛍️", name:"Tokopedia Affiliate", url:"anesh.bio/tokped" },
-        { ico:"fi3", emoji:"💰", name:"TikTok Shop",         url:"anesh.bio/tiktokshop" },
-        { ico:"fi4", emoji:"📦", name:"Lazada Affiliate",    url:"anesh.bio/lazada" },
-        { ico:"fi5", emoji:"🎁", name:"Blibli Affiliate",    url:"anesh.bio/blibli" },
-        { ico:"fi1", emoji:"🏪", name:"Bukalapak Affiliate", url:"anesh.bio/bukalapak" },
+        { id:"a1", ico:"fi1", emoji:"🔗", name:"Shopee Affiliate",    url:"anesh.bio/shopee" },
+        { id:"a2", ico:"fi2", emoji:"🛍️", name:"Tokopedia Affiliate", url:"anesh.bio/tokped" },
+        { id:"a3", ico:"fi3", emoji:"💰", name:"TikTok Shop",         url:"anesh.bio/tiktokshop" },
+        { id:"a4", ico:"fi4", emoji:"📦", name:"Lazada Affiliate",    url:"anesh.bio/lazada" },
+        { id:"a5", ico:"fi5", emoji:"🎁", name:"Blibli Affiliate",    url:"anesh.bio/blibli" },
+        { id:"a6", ico:"fi1", emoji:"🏪", name:"Bukalapak Affiliate", url:"anesh.bio/bukalapak" },
       ],
     },
     bid: {
       title: "Lelang Aktif",
       items: [
-        { ico:"fi1", emoji:"🎨", name:"Cyborg Male NFT", url:"anesh.bio/lelang",
+        { id:"b1", ico:"fi1", emoji:"🎨", name:"Cyborg Male NFT", url:"anesh.bio/lelang",
           img:"https://res.cloudinary.com/dlogqjuwl/image/upload/v1776349549/bidthings/ibg94gpeymriupdvlu2t.jpg",
           price:"Rp 285.000", time:"02:14:33", seller:"@anesh.artnesh", bids:"47" },
       ],
@@ -69,35 +98,113 @@ export default function UserPage({ params }: { params: { username: string } }) {
     digital: {
       title: "Produk Digital",
       items: [
-        { ico:"fi1", emoji:"🔤", name:"Font Pack Retro Future", url:"anesh.bio/font" },
-        { ico:"fi3", emoji:"📱", name:"Mockup Bundle Vol.3",    url:"anesh.bio/mockup" },
-        { ico:"fi5", emoji:"⚡", name:"Icon Pack 500+",         url:"anesh.bio/icon" },
-        { ico:"fi2", emoji:"🖌️", name:"Brush Procreate Ink",   url:"anesh.bio/brush" },
+        { id:"d1", ico:"fi1", emoji:"🔤", name:"Font Pack Retro Future", url:"anesh.bio/font" },
+        { id:"d2", ico:"fi3", emoji:"📱", name:"Mockup Bundle Vol.3",    url:"anesh.bio/mockup" },
+        { id:"d3", ico:"fi5", emoji:"⚡", name:"Icon Pack 500+",         url:"anesh.bio/icon" },
+        { id:"d4", ico:"fi2", emoji:"🖌️", name:"Brush Procreate Ink",   url:"anesh.bio/brush" },
       ],
     },
     template: {
       title: "Template & Preset",
       items: [
-        { ico:"fi2", emoji:"📄", name:"Portofolio Canva Pro",    url:"anesh.bio/canva" },
-        { ico:"fi1", emoji:"📅", name:"Content Planner Notion",  url:"anesh.bio/notion" },
-        { ico:"fi4", emoji:"🌅", name:"Preset Golden Hour",      url:"anesh.bio/preset" },
-        { ico:"fi3", emoji:"🎬", name:"CapCut Pack Aesthetic",   url:"anesh.bio/capcut" },
+        { id:"t1", ico:"fi2", emoji:"📄", name:"Portofolio Canva Pro",    url:"anesh.bio/canva" },
+        { id:"t2", ico:"fi1", emoji:"📅", name:"Content Planner Notion",  url:"anesh.bio/notion" },
+        { id:"t3", ico:"fi4", emoji:"🌅", name:"Preset Golden Hour",      url:"anesh.bio/preset" },
+        { id:"t4", ico:"fi3", emoji:"🎬", name:"CapCut Pack Aesthetic",   url:"anesh.bio/capcut" },
       ],
     },
     food: {
       title: "Menu & Produk",
       items: [
-        { ico:"fi1", emoji:"🍗", name:"Nasi Ayam Geprek Spesial", url:"anesh.bio/geprek" },
-        { ico:"fi3", emoji:"🍜", name:"Mie Goreng Jawa Premium",  url:"anesh.bio/miegoreng" },
-        { ico:"fi4", emoji:"🧋", name:"Brown Sugar Boba Milk",    url:"anesh.bio/boba" },
-        { ico:"fi2", emoji:"🥩", name:"Sate Ayam Madura",         url:"anesh.bio/sate" },
+        { id:"f1", ico:"fi1", emoji:"🍗", name:"Nasi Ayam Geprek Spesial", url:"anesh.bio/geprek" },
+        { id:"f2", ico:"fi3", emoji:"🍜", name:"Mie Goreng Jawa Premium",  url:"anesh.bio/miegoreng" },
+        { id:"f3", ico:"fi4", emoji:"🧋", name:"Brown Sugar Boba Milk",    url:"anesh.bio/boba" },
+        { id:"f4", ico:"fi2", emoji:"🥩", name:"Sate Ayam Madura",         url:"anesh.bio/sate" },
       ],
     },
+  });
+
+  // ── Edit helpers ─────────────────────────────────────────────────────────
+  const updateItem = (catKey: string, itemId: string, field: keyof LinkItem, value: string) => {
+    setCatData(prev => ({
+      ...prev,
+      [catKey]: {
+        ...prev[catKey],
+        items: prev[catKey].items.map(it => it.id === itemId ? { ...it, [field]: value } : it),
+      },
+    }));
+  };
+
+  const deleteItem = (catKey: string, itemId: string) => {
+    setCatData(prev => ({
+      ...prev,
+      [catKey]: {
+        ...prev[catKey],
+        items: prev[catKey].items.filter(it => it.id !== itemId),
+      },
+    }));
+    showToast("Link dihapus");
+  };
+
+  const addItem = (catKey: string) => {
+    const newId = `new_${Date.now()}`;
+    const icoList = ["fi1","fi2","fi3","fi4","fi5"];
+    setCatData(prev => ({
+      ...prev,
+      [catKey]: {
+        ...prev[catKey],
+        items: [
+          ...prev[catKey].items,
+          { id: newId, ico: icoList[prev[catKey].items.length % 5], emoji: "🔗", name: "Link baru", url: "yourlink.bio/link" },
+        ],
+      },
+    }));
+    showToast("Link ditambahkan ✅");
   };
 
   const current = catData[selectedCat];
-  const visibleItems = current.items.slice(0, 5);
-  const hasMore = current.items.length > 5;
+  const visibleItems = editMode ? current.items : current.items.slice(0, 5);
+  const hasMore = !editMode && current.items.length > 5;
+
+  // ── Inline editable text ─────────────────────────────────────────────────
+  const EditableText = ({
+    value, onChange, fieldKey, className, style, multiline,
+  }: {
+    value: string; onChange: (v: string) => void; fieldKey: string;
+    className?: string; style?: React.CSSProperties; multiline?: boolean;
+  }) => {
+    const isEditing = editingField === fieldKey;
+    if (!editMode) return <span className={className} style={style}>{value}</span>;
+    if (isEditing) {
+      const props = {
+        autoFocus: true,
+        value,
+        onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange(e.target.value),
+        onBlur: () => setEditingField(null),
+        onKeyDown: (e: React.KeyboardEvent) => { if (e.key === "Enter" && !multiline) setEditingField(null); },
+        style: {
+          background: "rgba(255,255,255,.08)", border: "1.5px solid rgba(255,255,255,.3)",
+          borderRadius: 8, color: "#fff", padding: "4px 8px", fontSize: "inherit",
+          fontWeight: "inherit", fontFamily: "inherit", width: "100%", outline: "none",
+          resize: "none" as const, lineHeight: "inherit",
+          ...style,
+        },
+      };
+      return multiline
+        ? <textarea rows={2} {...props} />
+        : <input type="text" {...props} />;
+    }
+    return (
+      <span
+        className={className}
+        style={{ ...style, cursor: "text", borderBottom: "1.5px dashed rgba(255,255,255,.3)", paddingBottom: 1 }}
+        onClick={() => setEditingField(fieldKey)}
+        title="Klik untuk edit"
+      >
+        {value}
+      </span>
+    );
+  };
 
   const Content = () => (
     <div className="app">
@@ -124,13 +231,31 @@ export default function UserPage({ params }: { params: { username: string } }) {
       </div>
 
       {/* Profile Card */}
-      <div className="profile-card">
-        <img className="profile-avatar" src="https://pbs.twimg.com/profile_images/2042441264453599233/foTV-yAr_400x400.jpg" alt="pfp" />
-        <div className="profile-info">
-          <div className="profile-name">Anesh Artnesh</div>
-          <div className="profile-bio">Digital creator passionate about art, design, and visual storytelling</div>
+      <div className={`profile-card${editMode ? " profile-card-edit" : ""}`}>
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <img className="profile-avatar" src="https://pbs.twimg.com/profile_images/2042441264453599233/foTV-yAr_400x400.jpg" alt="pfp" />
+          {editMode && (
+            <button className="avatar-edit-btn" onClick={() => showToast("Ganti foto profil")} title="Ganti foto">
+              📷
+            </button>
+          )}
         </div>
-        <div className="love-section" onClick={handleLove}>
+        <div className="profile-info">
+          <EditableText
+            value={profileName}
+            onChange={setProfileName}
+            fieldKey="profile-name"
+            className="profile-name"
+          />
+          <EditableText
+            value={profileBio}
+            onChange={setProfileBio}
+            fieldKey="profile-bio"
+            className="profile-bio"
+            multiline
+          />
+        </div>
+        <div className="love-section" onClick={editMode ? undefined : handleLove} style={editMode ? { opacity: 0.4, cursor: "default" } : {}}>
           <svg className="love-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
@@ -152,14 +277,17 @@ export default function UserPage({ params }: { params: { username: string } }) {
       </div>
 
       {/* Link List */}
-      <div className="fav-box">
+      <div className={`fav-box${editMode ? " fav-box-edit" : ""}`}>
         <div className="fav-head">
           <div className="fav-title">{current.title}</div>
         </div>
         <div className="fav-list">
           {selectedCat === "bid" ? (
             visibleItems.map((item) => (
-              <div key={item.name} style={{ marginBottom: 16, cursor: "pointer" }}>
+              <div key={item.id} style={{ marginBottom: 16, cursor: "pointer", position: "relative" }}>
+                {editMode && (
+                  <button className="item-delete-btn" onClick={() => deleteItem(selectedCat, item.id)} title="Hapus">✕</button>
+                )}
                 <div style={{ background: `url('${item.img}') center/cover`, borderRadius: 16, height: 320, width: "100%" }} />
                 <div style={{ padding: "14px 0 0" }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{item.name}</div>
@@ -182,17 +310,51 @@ export default function UserPage({ params }: { params: { username: string } }) {
             ))
           ) : (
             visibleItems.map((item) => (
-            <div key={item.name} className="fav-row">
-              <div className={`fav-ico ${item.ico}`}>{item.emoji}</div>
-              <div className="fav-info">
-                <div className="fav-name">{item.name}</div>
-                <div className="fav-url">{item.url}</div>
+              <div key={item.id} className={`fav-row${editMode ? " fav-row-edit" : ""}`}>
+                {editMode && (
+                  <span className="drag-handle" title="Drag untuk reorder">⠿</span>
+                )}
+                <div className={`fav-ico ${item.ico}`}>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={item.emoji}
+                      onChange={e => updateItem(selectedCat, item.id, "emoji", e.target.value)}
+                      style={{ background: "transparent", border: "none", color: "#fff", fontSize: 22, width: 32, textAlign: "center", outline: "none", cursor: "text" }}
+                      maxLength={2}
+                    />
+                  ) : item.emoji}
+                </div>
+                <div className="fav-info">
+                  <EditableText
+                    value={item.name}
+                    onChange={v => updateItem(selectedCat, item.id, "name", v)}
+                    fieldKey={`name-${item.id}`}
+                    className="fav-name"
+                  />
+                  <EditableText
+                    value={item.url}
+                    onChange={v => updateItem(selectedCat, item.id, "url", v)}
+                    fieldKey={`url-${item.id}`}
+                    className="fav-url"
+                  />
+                </div>
+                {editMode ? (
+                  <button className="item-delete-btn-inline" onClick={() => deleteItem(selectedCat, item.id)} title="Hapus">✕</button>
+                ) : (
+                  <button className="view-btn" onClick={() => showToast("Membuka link...")}>Lihat</button>
+                )}
               </div>
-              <button className="view-btn" onClick={() => showToast("Membuka link...")}>Lihat</button>
-            </div>
             ))
           )}
         </div>
+
+        {/* Add link button — only in edit mode */}
+        {editMode && selectedCat !== "bid" && (
+          <button className="add-link-btn" onClick={() => addItem(selectedCat)}>
+            <span>＋</span> Tambah Link
+          </button>
+        )}
       </div>
 
       {hasMore && (
@@ -221,6 +383,30 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
   return (
     <>
+      {/* Live / Edit toggle — only visible to owner */}
+      {isOwner && (
+        <div className="mode-bar">
+          <button
+            className={`mode-btn${!editMode ? " mode-btn-active" : ""}`}
+            onClick={() => { setEditMode(false); showToast("Mode Live aktif 👁"); }}
+          >
+            <span className="mode-dot mode-dot-live" />
+            Live
+          </button>
+          <button
+            className={`mode-btn${editMode ? " mode-btn-active" : ""}`}
+            onClick={() => { setEditMode(true); showToast("Mode Edit aktif ✏️"); }}
+          >
+            ✏️ Edit
+          </button>
+          {editMode && (
+            <button className="mode-save-btn" onClick={() => { setEditMode(false); showToast("Perubahan disimpan ✅"); }}>
+              Simpan
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Mobile */}
       <div className="mobile-only"><Content /></div>
 
@@ -353,6 +539,30 @@ export default function UserPage({ params }: { params: { username: string } }) {
           100%{opacity:0;transform:translateY(-80px) translateX(var(--tx)) scale(0)}
         }
         .love-emoji{position:fixed;font-size:20px;pointer-events:none;animation:loveup 1.2s cubic-bezier(.25,.46,.45,.94) forwards;z-index:999}
+
+        /* ===== LIVE / EDIT MODE BAR ===== */
+        .mode-bar{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:6px;background:rgba(28,28,30,.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 6px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+        .mode-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+        .mode-btn:hover{color:#fff}
+        .mode-btn-active{background:rgba(255,255,255,.12);color:#fff}
+        .mode-dot{width:7px;height:7px;border-radius:50%;background:#30D158;box-shadow:0 0 6px #30D158;display:inline-block}
+        .mode-save-btn{background:linear-gradient(135deg,#30D158,#0A84FF);border:none;color:#fff;font-size:13px;font-weight:700;padding:6px 16px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:4px}
+        .mode-save-btn:hover{opacity:.85}
+        .mode-save-btn:active{transform:scale(.95)}
+
+        /* ===== EDIT MODE STYLES ===== */
+        .profile-card-edit{border:1.5px dashed rgba(255,255,255,.2);background:#1c1c1e}
+        .avatar-edit-btn{position:absolute;bottom:-4px;right:-4px;background:#0A84FF;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+        .fav-box-edit{border:1.5px dashed rgba(255,255,255,.15)}
+        .fav-row-edit{border-bottom:.5px solid rgba(255,255,255,.08)!important;padding:10px 0!important}
+        .drag-handle{color:rgba(255,255,255,.3);font-size:18px;cursor:grab;flex-shrink:0;padding:0 4px;user-select:none}
+        .drag-handle:active{cursor:grabbing}
+        .item-delete-btn{position:absolute;top:8px;right:8px;background:rgba(255,55,95,.85);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s}
+        .item-delete-btn:hover{background:#FF375F;transform:scale(1.1)}
+        .item-delete-btn-inline{background:rgba(255,55,95,.15);border:1px solid rgba(255,55,95,.3);color:#FF375F;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+        .item-delete-btn-inline:hover{background:rgba(255,55,95,.3)}
+        .add-link-btn{width:calc(100% - 32px);margin:4px 16px 16px;background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.2);color:rgba(255,255,255,.6);font-size:14px;font-weight:600;padding:12px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .add-link-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35)}
       `}</style>
     </>
   );
