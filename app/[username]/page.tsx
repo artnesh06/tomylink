@@ -40,13 +40,13 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
   const cats = [
     { key: "affiliate", label: "Affiliate", cls: "c1" },
-    { key: "bid",       label: "Lelang",    cls: "c4" },
+    { key: "bid",       label: "Lelang",    cls: "c2" },
     { key: "digital",   label: "Digital",   cls: "c3" },
     { key: "template",  label: "Template",  cls: "c2" },
     { key: "food",      label: "Delivery",  cls: "c5" },
   ];
 
-  const catData: Record<string, { title: string; items: Array<{ ico: string; emoji: string; name: string; url: string }> }> = {
+  const catData: Record<string, { title: string; items: Array<{ ico: string; emoji: string; name: string; url: string; img?: string; price?: string; time?: string; seller?: string; bids?: string }> }> = {
     affiliate: {
       title: "Link Terpopuler",
       items: [
@@ -61,7 +61,9 @@ export default function UserPage({ params }: { params: { username: string } }) {
     bid: {
       title: "Lelang Aktif",
       items: [
-        { ico:"fi1", emoji:"🎨", name:"Art Pack Neon Cityscape", url:"anesh.bio/lelang" },
+        { ico:"fi1", emoji:"🎨", name:"Cyborg Male NFT", url:"anesh.bio/lelang",
+          img:"https://res.cloudinary.com/dlogqjuwl/image/upload/v1776349549/bidthings/ibg94gpeymriupdvlu2t.jpg",
+          price:"Rp 285.000", time:"02:14:33", seller:"@anesh.artnesh", bids:"47" },
       ],
     },
     digital: {
@@ -155,7 +157,31 @@ export default function UserPage({ params }: { params: { username: string } }) {
           <div className="fav-title">{current.title}</div>
         </div>
         <div className="fav-list">
-          {visibleItems.map((item) => (
+          {selectedCat === "bid" ? (
+            visibleItems.map((item) => (
+              <div key={item.name} style={{ marginBottom: 16, cursor: "pointer" }}>
+                <div style={{ background: `url('${item.img}') center/cover`, borderRadius: 16, height: 320, width: "100%" }} />
+                <div style={{ padding: "14px 0 0" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{item.name}</div>
+                  <div style={{ fontSize: 13, color: "#636366", marginBottom: 14 }}>oleh {item.seller} · {item.bids} penawar aktif</div>
+                  <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+                    <div style={{ flex: 1, background: "#000", borderRadius: 12, padding: "10px 14px" }}>
+                      <div style={{ fontSize: 11, color: "#636366", marginBottom: 4 }}>Harga tertinggi</div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "#BF5AF2" }}>{item.price}</div>
+                    </div>
+                    <div style={{ flex: 1, background: "#2d0a0a", borderRadius: 12, padding: "10px 14px", border: "1px solid rgba(255,55,95,.2)" }}>
+                      <div style={{ fontSize: 11, color: "#FF375F", marginBottom: 4, opacity: 0.8 }}>⏱ Sisa waktu</div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "#FF6B8A" }}>{item.time}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => showToast("🔨 Pasang bid sekarang!")} style={{ width: "100%", padding: 15, background: "linear-gradient(135deg,#5E5CE6,#BF5AF2)", border: "none", borderRadius: 14, color: "#fff", fontSize: 17, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                    🔨 Pasang Bid Sekarang
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            visibleItems.map((item) => (
             <div key={item.name} className="fav-row">
               <div className={`fav-ico ${item.ico}`}>{item.emoji}</div>
               <div className="fav-info">
@@ -164,7 +190,8 @@ export default function UserPage({ params }: { params: { username: string } }) {
               </div>
               <button className="view-btn" onClick={() => showToast("Membuka link...")}>Lihat</button>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
