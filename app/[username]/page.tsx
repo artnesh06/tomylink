@@ -257,9 +257,9 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
         /* ===== DESKTOP FRAME ===== */
         @media(min-width:769px){
-          .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-          .desktop-frame{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:390px;flex-shrink:0;z-index:10}
-          .phone-screen{width:390px;height:calc(100vh - 60px);max-height:820px;border-radius:52px;overflow:hidden;box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #3a3a3a,0 40px 80px rgba(0,0,0,.6);position:relative;background:#000}
+          .desktop-only{background:#b0b0b0;min-height:100vh;overflow:hidden}
+          .desktop-frame{position:fixed;top:0;left:50%;transform:translateX(-50%);width:390px;flex-shrink:0;z-index:10}
+          .phone-screen{width:390px;height:100vh;border-radius:52px 52px 0 0;overflow:hidden;box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #3a3a3a,0 40px 80px rgba(0,0,0,.6);position:relative;background:#000;margin-top:20px}
           .phone-inner{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
           .phone-inner::-webkit-scrollbar{display:none}
           .phone-notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:126px;height:36px;background:#1a1a1a;border-radius:20px;z-index:100;pointer-events:none}
