@@ -11,12 +11,13 @@ const tokens = [
     change: "-$0.06",
     positive: false,
     logo: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="18" fill="#1a1a2e"/>
-        <polygon points="18,6 24,18 18,21.5 12,18" fill="#8A92B2"/>
-        <polygon points="18,21.5 24,18 18,30" fill="#62688F"/>
-        <polygon points="18,21.5 12,18 18,30" fill="#454A75"/>
-        <polygon points="18,6 12,18 18,15" fill="#62688F"/>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#1C1C3A"/>
+        <polygon points="20,7 26,20 20,23.5 14,20" fill="#8A92B2"/>
+        <polygon points="20,23.5 26,20 20,33" fill="#62688F"/>
+        <polygon points="20,23.5 14,20 20,33" fill="#454A75"/>
+        <polygon points="20,7 14,20 20,17" fill="#62688F"/>
+        <polygon points="20,17 26,20 20,23.5 14,20" fill="#C0C4E4" opacity="0.6"/>
       </svg>
     ),
   },
@@ -29,9 +30,10 @@ const tokens = [
     change: "-<$0.01",
     positive: false,
     logo: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="18" fill="#0d1117"/>
-        <path d="M10 22 Q14 14 18 18 Q22 22 26 14" stroke="#00E5CC" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#0d1117"/>
+        {/* bow-tie / HYPE shape */}
+        <path d="M10 16 C13 16 15 20 20 20 C25 20 27 16 30 16 C27 16 25 24 20 24 C15 24 13 16 10 16Z" fill="#00E5CC"/>
       </svg>
     ),
   },
@@ -44,14 +46,15 @@ const tokens = [
     change: "-<$0.01",
     positive: false,
     logo: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="18" fill="#1a1a2e"/>
-        <polygon points="18,6 24,18 18,21.5 12,18" fill="#8A92B2" opacity="0.7"/>
-        <polygon points="18,21.5 24,18 18,30" fill="#62688F" opacity="0.7"/>
-        <polygon points="18,21.5 12,18 18,30" fill="#454A75" opacity="0.7"/>
-        <circle cx="22" cy="22" r="7" fill="#1a1a2e" stroke="#8A92B2" strokeWidth="1"/>
-        <circle cx="22" cy="22" r="4" fill="#2a2a3e"/>
-        <path d="M20 22 L22 20 L24 22 L22 24 Z" fill="#8A92B2"/>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#1C1C3A"/>
+        <polygon points="20,7 26,20 20,23.5 14,20" fill="#8A92B2" opacity="0.8"/>
+        <polygon points="20,23.5 26,20 20,33" fill="#62688F" opacity="0.8"/>
+        <polygon points="20,23.5 14,20 20,33" fill="#454A75" opacity="0.8"/>
+        {/* wrapped indicator circle */}
+        <circle cx="27" cy="27" r="8" fill="#1C1C3A" stroke="#444" strokeWidth="1"/>
+        <circle cx="27" cy="27" r="5" fill="#2a2a4a"/>
+        <polygon points="27,23 29.5,27 27,28.5 24.5,27" fill="#8A92B2" opacity="0.9"/>
       </svg>
     ),
   },
@@ -64,9 +67,9 @@ const tokens = [
     change: "+$0.00",
     positive: true,
     logo: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="18" fill="#7B3FE4"/>
-        <text x="18" y="23" textAnchor="middle" fontSize="14" fill="white" fontWeight="bold">D</text>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#7B3FE4"/>
+        <text x="20" y="26" textAnchor="middle" fontSize="16" fill="white" fontWeight="bold" fontFamily="Arial">D</text>
       </svg>
     ),
   },
@@ -141,7 +144,7 @@ export default function WalletPage() {
             </svg>
             <span className="status-5g">5G</span>
             <div className="battery-icon">
-              <div className="battery-fill" />
+              <span className="battery-num">24</span>
               <div className="battery-tip" />
             </div>
           </div>
@@ -151,9 +154,10 @@ export default function WalletPage() {
         <div className="wallet-header">
           <div className="header-left">
             <div className="header-avatar">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="18" fill="#1a1a1a"/>
-                <text x="18" y="24" textAnchor="middle" fontSize="18" fill="#FFD700">🦅</text>
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                <circle cx="22" cy="22" r="22" fill="#1a1a1a"/>
+                {/* Eagle / graffiti style icon matching screenshot */}
+                <text x="22" y="30" textAnchor="middle" fontSize="22">🦅</text>
               </svg>
             </div>
             <div className="header-info">
@@ -163,13 +167,13 @@ export default function WalletPage() {
           </div>
           <div className="header-actions">
             <button className="header-icon-btn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
               </svg>
             </button>
             <button className="header-icon-btn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
             </button>
@@ -310,11 +314,12 @@ export default function WalletPage() {
         }
         .status-time{
           font-size:15px;
-          font-weight:600;
+          font-weight:700;
           color:#fff;
-          background:#2a2a2a;
-          padding:3px 10px;
+          background:#1DB954;
+          padding:4px 12px;
           border-radius:20px;
+          letter-spacing:0.3px;
         }
         .status-right{
           display:flex;
@@ -327,20 +332,20 @@ export default function WalletPage() {
           color:#fff;
         }
         .battery-icon{
-          width:24px;
-          height:12px;
-          border:1.5px solid rgba(255,255,255,.6);
+          width:28px;
+          height:14px;
+          border:1.5px solid rgba(255,255,255,.5);
           border-radius:3px;
           position:relative;
           display:flex;
           align-items:center;
-          padding:1.5px;
+          justify-content:center;
         }
-        .battery-fill{
-          width:60%;
-          height:100%;
-          background:#fff;
-          border-radius:1.5px;
+        .battery-num{
+          font-size:9px;
+          font-weight:700;
+          color:#fff;
+          line-height:1;
         }
         .battery-tip{
           position:absolute;
@@ -358,16 +363,16 @@ export default function WalletPage() {
           display:flex;
           align-items:center;
           justify-content:space-between;
-          padding:10px 20px 6px;
+          padding:12px 20px 8px;
         }
         .header-left{
           display:flex;
           align-items:center;
-          gap:10px;
+          gap:12px;
         }
         .header-avatar{
-          width:40px;
-          height:40px;
+          width:48px;
+          height:48px;
           border-radius:50%;
           overflow:hidden;
           background:#1a1a1a;
@@ -375,11 +380,13 @@ export default function WalletPage() {
           align-items:center;
           justify-content:center;
           flex-shrink:0;
+          font-size:26px;
+          line-height:1;
         }
         .header-info{
           display:flex;
           flex-direction:column;
-          gap:1px;
+          gap:2px;
         }
         .header-username{
           font-size:12px;
@@ -387,20 +394,20 @@ export default function WalletPage() {
           font-weight:400;
         }
         .header-name{
-          font-size:18px;
+          font-size:20px;
           font-weight:700;
           color:#fff;
-          letter-spacing:-0.3px;
+          letter-spacing:-0.4px;
         }
         .header-actions{
           display:flex;
-          gap:8px;
+          gap:4px;
         }
         .header-icon-btn{
           background:transparent;
           border:none;
           cursor:pointer;
-          padding:6px;
+          padding:8px;
           display:flex;
           align-items:center;
           justify-content:center;
@@ -552,8 +559,8 @@ export default function WalletPage() {
         .token-row:last-child{border-bottom:none}
         .token-row:hover{background:rgba(255,255,255,.04)}
         .token-logo{
-          width:40px;
-          height:40px;
+          width:44px;
+          height:44px;
           border-radius:50%;
           overflow:hidden;
           flex-shrink:0;
