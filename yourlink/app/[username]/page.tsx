@@ -1,112 +1,106 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 export default function UserPage({ params }: { params: { username: string } }) {
   const [loveCount, setLoveCount] = useState(0);
-  const [loveActive, setLoveActive] = useState(false);
-  const [floatingEmojis, setFloatingEmojis] = useState<Array<{ id: number; emoji: string; x: number; y: number; tx: number }>>([]);
-  const [emojiCounter, setEmojiCounter] = useState(0);
   const [selectedCat, setSelectedCat] = useState("affiliate");
-  const [toast, setToast] = useState("");
-  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastShow, setToastShow] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const loveRef = useRef<HTMLDivElement>(null);
-
-  const emojiList = ["❤️", "💕", "💖", "💗", "💝", "💓", "💞", "💘"];
 
   const showToast = (msg: string) => {
-    setToast(msg);
-    setToastVisible(true);
+    setToastMsg(msg);
+    setToastShow(true);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToastVisible(false), 2500);
+    toastTimer.current = setTimeout(() => setToastShow(false), 2500);
   };
 
   const handleLove = (e: React.MouseEvent) => {
-    setLoveCount((c) => c + 1);
-    setLoveActive(true);
-    setTimeout(() => setLoveActive(false), 600);
-
+    const newCount = loveCount + 1;
+    setLoveCount(newCount);
+    const emojiList = ["❤️","💕","��","💗","💝","💓","💞","💘"];
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
-
     for (let i = 0; i < 8; i++) {
       setTimeout(() => {
+        const el = document.createElement("div");
+        el.className = "love-emoji";
+        el.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
         const tx = (Math.random() * 0.7 + 0.3) * 140;
-        const newId = emojiCounter + i + Date.now();
-        setFloatingEmojis((prev) => [...prev, {
-          id: newId,
-          emoji: emojiList[Math.floor(Math.random() * emojiList.length)],
-          x: startX, y: startY, tx,
-        }]);
-        setTimeout(() => setFloatingEmojis((prev) => prev.filter((e) => e.id !== newId)), 1200);
+        el.style.left = startX + "px";
+        el.style.top = startY + "px";
+        el.style.setProperty("--tx", tx + "px");
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1200);
       }, i * 40);
     }
-    setEmojiCounter((c) => c + 8);
-    showToast(`❤️ ${loveCount + 1} orang menyukai Anesh!`);
+    showToast(`❤️ ${newCount} orang menyukai Anesh!`);
   };
 
-  const catData = {
+  const cats = [
+    { key: "affiliate", label: "Affiliate", cls: "c1" },
+    { key: "bid",       label: "Lelang",    cls: "c4" },
+    { key: "digital",   label: "Digital",   cls: "c3" },
+    { key: "template",  label: "Template",  cls: "c2" },
+    { key: "food",      label: "Delivery",  cls: "c5" },
+  ];
+
+  const catData: Record<string, { title: string; items: Array<{ ico: string; emoji: string; name: string; url: string }> }> = {
     affiliate: {
       title: "Link Terpopuler",
       items: [
-        { ico: "fi1", emoji: "🔗", name: "Shopee Affiliate", url: "anesh.bio/shopee", bg: "linear-gradient(135deg,#5E5CE6,#BF5AF2)" },
-        { ico: "fi2", emoji: "🛍️", name: "Tokopedia Affiliate", url: "anesh.bio/tokped", bg: "linear-gradient(135deg,#FF9F0A,#FF375F)" },
-        { ico: "fi3", emoji: "💰", name: "TikTok Shop", url: "anesh.bio/tiktokshop", bg: "linear-gradient(135deg,#30D158,#0A84FF)" },
-        { ico: "fi4", emoji: "📦", name: "Lazada Affiliate", url: "anesh.bio/lazada", bg: "linear-gradient(135deg,#FF9F0A,#FF6B00)" },
-        { ico: "fi5", emoji: "🎁", name: "Blibli Affiliate", url: "anesh.bio/blibli", bg: "linear-gradient(135deg,#BF5AF2,#5E5CE6)" },
+        { ico:"fi1", emoji:"🔗", name:"Shopee Affiliate",    url:"anesh.bio/shopee" },
+        { ico:"fi2", emoji:"🛍️", name:"Tokopedia Affiliate", url:"anesh.bio/tokped" },
+        { ico:"fi3", emoji:"💰", name:"TikTok Shop",         url:"anesh.bio/tiktokshop" },
+        { ico:"fi4", emoji:"📦", name:"Lazada Affiliate",    url:"anesh.bio/lazada" },
+        { ico:"fi5", emoji:"🎁", name:"Blibli Affiliate",    url:"anesh.bio/blibli" },
+        { ico:"fi1", emoji:"🏪", name:"Bukalapak Affiliate", url:"anesh.bio/bukalapak" },
       ],
     },
     bid: {
       title: "Lelang Aktif",
       items: [
-        { name: "Cyborg Male NFT", img: "https://res.cloudinary.com/dlogqjuwl/image/upload/v1776349549/bidthings/ibg94gpeymriupdvlu2t.jpg", price: "Rp 285.000", time: "02:14:33", seller: "@anesh.artnesh", bids: "47" },
+        { ico:"fi1", emoji:"🎨", name:"Art Pack Neon Cityscape", url:"anesh.bio/lelang" },
       ],
     },
     digital: {
       title: "Produk Digital",
       items: [
-        { ico: "fi1", emoji: "🔤", name: "Font Pack Retro Future", url: "anesh.bio/font", bg: "linear-gradient(135deg,#5E5CE6,#BF5AF2)" },
-        { ico: "fi3", emoji: "📱", name: "Mockup Bundle Vol.3", url: "anesh.bio/mockup", bg: "linear-gradient(135deg,#30D158,#0A84FF)" },
-        { ico: "fi5", emoji: "⚡", name: "Icon Pack 500+", url: "anesh.bio/icon", bg: "linear-gradient(135deg,#BF5AF2,#5E5CE6)" },
-        { ico: "fi2", emoji: "🖌️", name: "Brush Procreate Ink", url: "anesh.bio/brush", bg: "linear-gradient(135deg,#FF9F0A,#FF375F)" },
+        { ico:"fi1", emoji:"🔤", name:"Font Pack Retro Future", url:"anesh.bio/font" },
+        { ico:"fi3", emoji:"📱", name:"Mockup Bundle Vol.3",    url:"anesh.bio/mockup" },
+        { ico:"fi5", emoji:"⚡", name:"Icon Pack 500+",         url:"anesh.bio/icon" },
+        { ico:"fi2", emoji:"🖌️", name:"Brush Procreate Ink",   url:"anesh.bio/brush" },
       ],
     },
     template: {
       title: "Template & Preset",
       items: [
-        { ico: "fi2", emoji: "📄", name: "Portofolio Canva Pro", url: "anesh.bio/canva", bg: "linear-gradient(135deg,#FF9F0A,#FF375F)" },
-        { ico: "fi1", emoji: "📅", name: "Content Planner Notion", url: "anesh.bio/notion", bg: "linear-gradient(135deg,#5E5CE6,#BF5AF2)" },
-        { ico: "fi4", emoji: "🌅", name: "Preset Golden Hour", url: "anesh.bio/preset", bg: "linear-gradient(135deg,#FF9F0A,#FF6B00)" },
-        { ico: "fi3", emoji: "🎬", name: "CapCut Pack Aesthetic", url: "anesh.bio/capcut", bg: "linear-gradient(135deg,#30D158,#0A84FF)" },
+        { ico:"fi2", emoji:"📄", name:"Portofolio Canva Pro",    url:"anesh.bio/canva" },
+        { ico:"fi1", emoji:"📅", name:"Content Planner Notion",  url:"anesh.bio/notion" },
+        { ico:"fi4", emoji:"🌅", name:"Preset Golden Hour",      url:"anesh.bio/preset" },
+        { ico:"fi3", emoji:"🎬", name:"CapCut Pack Aesthetic",   url:"anesh.bio/capcut" },
       ],
     },
     food: {
       title: "Menu & Produk",
       items: [
-        { ico: "fi1", emoji: "🍗", name: "Nasi Ayam Geprek Spesial", url: "anesh.bio/geprek", bg: "linear-gradient(135deg,#FF9F0A,#FF6B00)" },
-        { ico: "fi3", emoji: "🍜", name: "Mie Goreng Jawa Premium", url: "anesh.bio/miegoreng", bg: "linear-gradient(135deg,#30D158,#0A84FF)" },
-        { ico: "fi4", emoji: "🧋", name: "Brown Sugar Boba Milk", url: "anesh.bio/boba", bg: "linear-gradient(135deg,#FF9F0A,#FF6B00)" },
-        { ico: "fi2", emoji: "🥩", name: "Sate Ayam Madura", url: "anesh.bio/sate", bg: "linear-gradient(135deg,#FF9F0A,#FF375F)" },
+        { ico:"fi1", emoji:"🍗", name:"Nasi Ayam Geprek Spesial", url:"anesh.bio/geprek" },
+        { ico:"fi3", emoji:"🍜", name:"Mie Goreng Jawa Premium",  url:"anesh.bio/miegoreng" },
+        { ico:"fi4", emoji:"🧋", name:"Brown Sugar Boba Milk",    url:"anesh.bio/boba" },
+        { ico:"fi2", emoji:"🥩", name:"Sate Ayam Madura",         url:"anesh.bio/sate" },
       ],
     },
   };
 
-  const cats = [
-    { key: "affiliate", label: "Affiliate", bg: "linear-gradient(135deg,#34D058,#1a9e3f)" },
-    { key: "bid", label: "Lelang", bg: "linear-gradient(135deg,#FF9500,#FF5E00)" },
-    { key: "digital", label: "Digital", bg: "linear-gradient(135deg,#1E90FF,#0055CC)" },
-    { key: "template", label: "Template", bg: "linear-gradient(135deg,#FF9500,#FF5E00)" },
-    { key: "food", label: "Delivery", bg: "linear-gradient(135deg,#AF52DE,#7B2FBE)" },
-  ];
-
-  const currentCat = catData[selectedCat as keyof typeof catData];
+  const current = catData[selectedCat];
+  const visibleItems = current.items.slice(0, 5);
+  const hasMore = current.items.length > 5;
 
   const Content = () => (
-    <div style={{ width: "100%", maxWidth: 430, margin: "0 auto", background: "#000", minHeight: "100vh", position: "relative", overflowX: "hidden", fontFamily: "-apple-system,'Helvetica Neue',sans-serif" }}>
-
-      {/* Social Icons Header */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "56px 20px 16px", background: "#000", flexWrap: "wrap" }}>
+    <div className="app">
+      {/* Social Icons */}
+      <div className="social-header">
         {[
           <svg key="fb" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>,
           <svg key="yt" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff" stroke="#fff" strokeWidth="1.5"/></svg>,
@@ -115,209 +109,223 @@ export default function UserPage({ params }: { params: { username: string } }) {
           <svg key="ig" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="#fff"/></svg>,
           <svg key="x" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M20 4L4 20"/></svg>,
         ].map((icon, idx) => (
-          <a key={idx} href="#" onClick={(e) => { e.preventDefault(); showToast("Link dibuka!"); }}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "transform .2s, opacity .2s" }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.15)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
+          <a key={idx} href="#" className="soc-link" onClick={(e) => { e.preventDefault(); showToast("Link dibuka!"); }}>
             {icon}
           </a>
         ))}
       </div>
 
-      {/* Search Box */}
-      <div style={{ margin: "0 16px 28px", background: "#1c1c1e", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ color: "#636366", fontSize: 18 }}>🔍</span>
-        <input type="text" placeholder="Cari link..." style={{ flex: 1, background: "transparent", border: "none", color: "#fff", fontSize: 15, outline: "none", fontFamily: "inherit" }} />
+      {/* Search */}
+      <div className="search-box">
+        <span className="search-icon">🔍</span>
+        <input type="text" placeholder="Cari link..." />
       </div>
 
       {/* Profile Card */}
-      <div ref={loveRef} style={{ margin: "0 16px 28px", background: "#1c1c1e", borderRadius: 20, padding: "0 16px 0 0", display: "flex", alignItems: "center", gap: 8, height: 100, overflow: "hidden" }}>
-        <img
-          src="https://pbs.twimg.com/profile_images/2042441264453599233/foTV-yAr_400x400.jpg"
-          alt="pfp"
-          style={{ width: 80, height: 80, borderRadius: 16, objectFit: "cover", flexShrink: 0, border: "2px solid rgba(255,255,255,.1)", margin: "0 12px" }}
-        />
-        <div style={{ flex: 1, minWidth: 0, paddingRight: 8 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 4, letterSpacing: -0.3 }}>Anesh Artnesh</div>
-          <div style={{ fontSize: 13, color: "#636366", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden", lineHeight: 1.3 }}>
-            Digital creator passionate about art, design, and visual storytelling through photography and illustration
-          </div>
+      <div className="profile-card">
+        <img className="profile-avatar" src="https://pbs.twimg.com/profile_images/2042441264453599233/foTV-yAr_400x400.jpg" alt="pfp" />
+        <div className="profile-info">
+          <div className="profile-name">Anesh Artnesh</div>
+          <div className="profile-bio">Digital creator passionate about art, design, and visual storytelling</div>
         </div>
-        <div onClick={handleLove} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, cursor: "pointer", userSelect: "none", marginRight: 20, flexShrink: 0 }}>
-          <svg style={{ width: 24, height: 24, display: "block", fill: loveActive ? "#FF375F" : "#636366", transition: "fill .2s, transform .2s", transform: loveActive ? "scale(1.2)" : "scale(1)" }} viewBox="0 0 24 24">
+        <div className="love-section" onClick={handleLove}>
+          <svg className="love-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
-          <span style={{ fontSize: 11, fontWeight: 400, color: "#636366" }}>{loveCount}</span>
+          <span className="love-count">{loveCount}</span>
         </div>
       </div>
 
       {/* Categories */}
-      <div style={{ display: "flex", gap: 12, padding: "4px 16px 32px", overflowX: "auto", scrollbarWidth: "none", scrollSnapType: "x mandatory" }}>
+      <div className="cats">
         {cats.map((cat) => (
           <div
             key={cat.key}
+            className={`cat ${cat.cls}${selectedCat === cat.key ? " cat-active" : ""}`}
             onClick={() => setSelectedCat(cat.key)}
-            style={{
-              width: 120, height: 60, borderRadius: 16, flexShrink: 0,
-              cursor: "pointer", position: "relative", overflow: "hidden",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              padding: 10, transition: "transform 0.2s", userSelect: "none",
-              background: cat.bg,
-              border: selectedCat === cat.key ? "1.5px solid rgba(255,255,255,.4)" : "1.5px solid transparent",
-              boxShadow: selectedCat === cat.key ? "0 0 14px rgba(255,255,255,.12)" : "none",
-              scrollSnapAlign: "center",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#fff", position: "relative", zIndex: 1, textAlign: "center" }}>{cat.label}</span>
+            <span className="cat-name">{cat.label}</span>
           </div>
         ))}
       </div>
 
       {/* Link List */}
-      <div style={{ margin: "0 16px 28px", background: "#1c1c1e", borderRadius: 16, overflow: "hidden" }}>
-        <div style={{ padding: "16px 16px 12px" }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>{currentCat.title}</div>
+      <div className="fav-box">
+        <div className="fav-head">
+          <div className="fav-title">{current.title}</div>
         </div>
-        <div style={{ padding: "0 16px 12px" }}>
-          {selectedCat === "bid" ? (
-            // Auction format
-            (currentCat.items as Array<{ name: string; img: string; price: string; time: string; seller: string; bids: string }>).map((item) => (
-              <div key={item.name} style={{ marginBottom: 16, cursor: "pointer" }}>
-                <div style={{ background: `url('${item.img}') center/cover`, borderRadius: 16, height: 350, width: "100%" }} />
-                <div style={{ padding: "16px 0 0" }}>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{item.name}</div>
-                  <div style={{ fontSize: 13, color: "#636366", marginBottom: 16 }}>oleh {item.seller} · {item.bids} penawar aktif</div>
-                  <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                    <div style={{ flex: 1, background: "#000", borderRadius: 12, padding: "10px 14px" }}>
-                      <div style={{ fontSize: 11, color: "#636366", marginBottom: 4 }}>Harga tertinggi</div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#BF5AF2" }}>{item.price}</div>
-                    </div>
-                    <div style={{ flex: 1, background: "#2d0a0a", borderRadius: 12, padding: "10px 14px", border: "1px solid rgba(255,55,95,.2)" }}>
-                      <div style={{ fontSize: 11, color: "#FF375F", marginBottom: 4, opacity: 0.8 }}>⏱ Sisa waktu</div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#FF6B8A" }}>{item.time}</div>
-                    </div>
-                  </div>
-                  <button onClick={() => showToast("🔨 Bid modal akan muncul!")} style={{ width: "100%", padding: 15, background: "linear-gradient(135deg,#5E5CE6,#BF5AF2)", border: "none", borderRadius: 14, color: "#fff", fontSize: 17, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                    🔨 Pasang Bid Sekarang
-                  </button>
-                </div>
+        <div className="fav-list">
+          {visibleItems.map((item) => (
+            <div key={item.name} className="fav-row">
+              <div className={`fav-ico ${item.ico}`}>{item.emoji}</div>
+              <div className="fav-info">
+                <div className="fav-name">{item.name}</div>
+                <div className="fav-url">{item.url}</div>
               </div>
-            ))
-          ) : (
-            // Normal link format
-            (currentCat.items as Array<{ emoji: string; name: string; url: string; bg: string }>).map((item) => (
-              <div key={item.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 0", borderBottom: "none", cursor: "pointer", borderRadius: 12, transition: "all .2s" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,.06)"; e.currentTarget.style.padding = "14px 8px"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.padding = "14px 0"; }}
-              >
-                <div style={{ width: 56, height: 56, borderRadius: 14, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, background: item.bg, boxShadow: "0 4px 12px rgba(0,0,0,.3)" }}>
-                  {item.emoji}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 3, letterSpacing: -0.2 }}>{item.name}</div>
-                  <div style={{ fontSize: 12, color: "#0A84FF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: 0.8 }}>{item.url}</div>
-                </div>
-                <button onClick={() => showToast("Membuka link...")} style={{ background: "linear-gradient(135deg,#0A84FF,#0066CC)", border: "none", color: "#fff", fontSize: 14, fontWeight: 600, padding: "8px 18px", borderRadius: 16, cursor: "pointer", fontFamily: "inherit", flexShrink: 0, boxShadow: "0 2px 8px rgba(10,132,255,.2)" }}>
-                  Lihat
-                </button>
-              </div>
-            ))
-          )}
+              <button className="view-btn" onClick={() => showToast("Membuka link...")}>Lihat</button>
+            </div>
+          ))}
         </div>
       </div>
 
+      {hasMore && (
+        <div className="see-more-container">
+          <button className="see-more-btn" onClick={() => showToast("Lihat semua link 🔗")}>
+            See More ({current.items.length - 5}+)
+          </button>
+        </div>
+      )}
+
       {/* Footer */}
-      <div style={{ padding: "32px 16px 48px", textAlign: "center", background: "#000" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, fontSize: 12, color: "rgba(255,255,255,.4)" }}>
-          {["Cookie Preferences", "Report", "Privacy", "Explore"].map((link, i, arr) => (
-            <span key={link} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <a href="#" style={{ color: "rgba(255,255,255,.4)", textDecoration: "none" }}>{link}</a>
-              {i < arr.length - 1 && <span style={{ color: "rgba(255,255,255,.2)" }}>•</span>}
+      <div className="footer">
+        <div className="footer-links">
+          {["Cookie Preferences","Report","Privacy","Explore","More from Yourlink"].map((link, i, arr) => (
+            <span key={link} style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <a href="#" onClick={(e) => e.preventDefault()}>{link}</a>
+              {i < arr.length - 1 && <span>•</span>}
             </span>
           ))}
         </div>
       </div>
 
-      {/* Home Bar */}
-      <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 28px", background: "#000" }}>
-        <div style={{ width: 134, height: 5, background: "rgba(255,255,255,.3)", borderRadius: 3 }} />
-      </div>
+      <div className="home-bar"><div></div></div>
     </div>
   );
 
   return (
     <>
-      {/* Floating Emojis - fixed position */}
-      {floatingEmojis.map((item) => (
-        <div key={item.id} style={{
-          position: "fixed", left: item.x, top: item.y,
-          fontSize: 20, pointerEvents: "none",
-          animation: `loveup 1.2s cubic-bezier(.25,.46,.45,.94) forwards`,
-          zIndex: 9999,
-          ["--tx" as string]: `${item.tx}px`,
-        }}>
-          {item.emoji}
-        </div>
-      ))}
-
-      {/* Toast */}
-      <div style={{
-        position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)",
-        background: "rgba(44,44,46,.95)", backdropFilter: "blur(20px)",
-        color: "#fff", padding: "10px 22px", borderRadius: 20,
-        fontSize: 14, fontWeight: 600, whiteSpace: "nowrap",
-        opacity: toastVisible ? 1 : 0, transition: "opacity .3s",
-        pointerEvents: "none", zIndex: 300, maxWidth: "90vw",
-      }}>
-        {toast}
-      </div>
-
-      {/* Mobile: full screen */}
-      <div className="mobile-only">
-        <Content />
-      </div>
+      {/* Mobile */}
+      <div className="mobile-only"><Content /></div>
 
       {/* Desktop: phone frame */}
-      <div className="desktop-only" style={{ background: "#b0b0b0", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 0" }}>
-        <div style={{ position: "relative", width: 393, flexShrink: 0 }}>
-          {/* Notch */}
-          <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: 120, height: 34, background: "#1a1a1a", borderRadius: 20, zIndex: 100, pointerEvents: "none" }} />
-          {/* Side buttons */}
-          <div style={{ position: "absolute", left: -12, top: 140, width: 4, height: 36, background: "#2a2a2a", borderRadius: "2px 0 0 2px" }} />
-          <div style={{ position: "absolute", left: -12, top: 186, width: 4, height: 36, background: "#2a2a2a", borderRadius: "2px 0 0 2px" }} />
-          <div style={{ position: "absolute", right: -12, top: 160, width: 4, height: 60, background: "#2a2a2a", borderRadius: "0 2px 2px 0" }} />
-          {/* Phone screen */}
-          <div style={{ width: 393, height: 820, borderRadius: 50, overflow: "hidden", boxShadow: "0 0 0 10px #1a1a1a, 0 0 0 12px #3a3a3a, 0 40px 80px rgba(0,0,0,.5)", position: "relative", background: "#000" }}>
-            <div style={{ width: "100%", height: "100%", overflowY: "auto", overflowX: "hidden", scrollbarWidth: "none" }}>
+      <div className="desktop-only">
+        <div className="desktop-frame">
+          <div className="phone-notch"></div>
+          <div className="phone-btn-vol"></div>
+          <div className="phone-btn-vol2"></div>
+          <div className="phone-btn-pwr"></div>
+          <div className="phone-screen">
+            <div className="phone-inner">
               <Content />
             </div>
           </div>
         </div>
-
-        {/* QR Panel */}
-        <div style={{ position: "fixed", bottom: 28, right: 28, background: "#fff", borderRadius: 16, padding: "14px 16px 12px", boxShadow: "0 4px 24px rgba(0,0,0,.18)", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, zIndex: 9999 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#333", letterSpacing: ".02em" }}>View on mobile</div>
-          <div style={{ width: 100, height: 100, background: "#f0f0f0", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#999" }}>QR Code</div>
+        <div className="qr-panel">
+          <div className="qr-label">View on mobile</div>
+          <div style={{ width:100, height:100, background:"#f0f0f0", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"#999" }}>QR Code</div>
         </div>
       </div>
 
+      {/* Toast */}
+      <div className={`toast${toastShow ? " show" : ""}`}>{toastMsg}</div>
+
       <style>{`
-        .mobile-only { display: none; }
-        .desktop-only { display: block; }
-        @media (max-width: 768px) {
-          .mobile-only { display: block; }
-          .desktop-only { display: none; }
+        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+        .mobile-only{display:none}
+        .desktop-only{display:block}
+        @media(max-width:768px){
+          .mobile-only{display:block}
+          .desktop-only{display:none}
         }
-        @keyframes loveup {
-          0% { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
-          100% { opacity: 0; transform: translateY(-80px) translateX(var(--tx)) scale(0); }
+
+        /* ===== DESKTOP FRAME ===== */
+        @media(min-width:769px){
+          .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
+          .desktop-frame{position:relative;width:393px;flex-shrink:0}
+          .phone-screen{width:393px;height:820px;border-radius:50px;overflow:hidden;box-shadow:0 0 0 10px #1a1a1a,0 0 0 12px #3a3a3a,0 40px 80px rgba(0,0,0,.5);position:relative;background:#000}
+          .phone-inner{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+          .phone-inner::-webkit-scrollbar{display:none}
+          .phone-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#1a1a1a;border-radius:20px;z-index:100;pointer-events:none}
+          .phone-btn-vol{position:absolute;left:-12px;top:140px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-vol2{position:absolute;left:-12px;top:186px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-pwr{position:absolute;right:-12px;top:160px;width:4px;height:60px;background:#2a2a2a;border-radius:0 2px 2px 0}
+          .qr-panel{position:fixed;bottom:28px;right:28px;background:#fff;border-radius:16px;padding:14px 16px 12px;box-shadow:0 4px 24px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:9999}
+          .qr-label{font-size:11px;font-weight:600;color:#333;letter-spacing:.02em}
+          .toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);max-width:340px}
         }
-        input::placeholder { color: #636366; }
-        * { -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { display: none; }
+
+        /* ===== APP ===== */
+        .app{width:100%;max-width:430px;margin:0 auto;background:#000;min-height:100vh;position:relative;overflow-x:hidden;font-family:-apple-system,'Helvetica Neue',sans-serif}
+
+        /* Social Icons */
+        .social-header{display:flex;justify-content:center;align-items:center;gap:16px;padding:56px 20px 16px;background:#000;flex-wrap:wrap}
+        .soc-link{display:flex;align-items:center;justify-content:center;transition:transform .2s ease,opacity .2s;text-decoration:none}
+        .soc-link:hover{transform:scale(1.15)}
+        .soc-link:active{transform:scale(.88);opacity:.7}
+
+        /* Search */
+        .search-box{margin:0 16px 28px;background:#1c1c1e;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+        .search-box input{flex:1;background:transparent;border:none;color:#fff;font-size:15px;outline:none;font-family:inherit}
+        .search-box input::placeholder{color:#636366}
+        .search-icon{color:#636366;font-size:18px}
+
+        /* Profile Card */
+        .profile-card{margin:0 16px 28px;background:#1c1c1e;border-radius:20px;padding:0 16px 0 0;display:flex;align-items:center;gap:8px;height:100px;overflow:hidden}
+        .profile-avatar{width:80px;height:80px;border-radius:16px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.1);margin:0 12px}
+        .profile-info{flex:1;min-width:0;padding-right:8px}
+        .profile-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-0.3px}
+        .profile-bio{font-size:13px;color:#636366;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+        .love-section{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;margin-right:20px;flex-shrink:0}
+        .love-icon{width:24px;height:24px;display:block;fill:#636366;transition:fill .2s,transform .2s}
+        .love-icon:hover{fill:#FF375F;transform:scale(1.2)}
+        .love-count{font-size:11px;font-weight:400;color:#636366}
+
+        /* Categories */
+        .cats{display:flex;gap:12px;padding:4px 16px 32px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+        .cats::-webkit-scrollbar{display:none}
+        .cat{width:120px;height:60px;border-radius:16px;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;transition:transform 0.2s;user-select:none;border:1.5px solid transparent;scroll-snap-align:center}
+        .cat:active{transform:scale(.95)}
+        .cat-active{border-color:rgba(255,255,255,.4);box-shadow:0 0 14px rgba(255,255,255,.12)}
+        .cat-name{font-size:15px;font-weight:700;color:#fff;position:relative;z-index:1;text-align:center}
+        .c1{background:linear-gradient(135deg,#34D058,#1a9e3f)}
+        .c2{background:linear-gradient(135deg,#FF9500,#FF5E00)}
+        .c3{background:linear-gradient(135deg,#1E90FF,#0055CC)}
+        .c4{background:linear-gradient(135deg,#FF6B35,#E8001D)}
+        .c5{background:linear-gradient(135deg,#AF52DE,#7B2FBE)}
+
+        /* Fav Box */
+        .fav-box{margin:0 16px 28px;background:#1c1c1e;border-radius:16px;overflow:hidden}
+        .fav-head{padding:16px 16px 12px}
+        .fav-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+        .fav-list{padding:0 16px 12px}
+        .fav-row{display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer;border-radius:12px;transition:all .2s;border-bottom:.5px solid transparent}
+        .fav-row:hover{background:rgba(255,255,255,.06);padding:14px 8px;border-bottom-color:rgba(255,255,255,.08)}
+        .fav-ico{width:56px;height:56px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+        .fi1{background:linear-gradient(135deg,#5E5CE6,#BF5AF2)}
+        .fi2{background:linear-gradient(135deg,#FF9F0A,#FF375F)}
+        .fi3{background:linear-gradient(135deg,#30D158,#0A84FF)}
+        .fi4{background:linear-gradient(135deg,#FF9F0A,#FF6B00)}
+        .fi5{background:linear-gradient(135deg,#BF5AF2,#5E5CE6)}
+        .fav-info{flex:1;min-width:0}
+        .fav-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;letter-spacing:-0.2px}
+        .fav-url{font-size:12px;color:#0A84FF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
+        .view-btn{background:linear-gradient(135deg,#0A84FF,#0066CC);border:none;color:#fff;font-size:14px;font-weight:600;padding:8px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0;box-shadow:0 2px 8px rgba(10,132,255,.2)}
+        .view-btn:active{transform:scale(.95);opacity:.8}
+
+        /* See More */
+        .see-more-container{display:flex;justify-content:center;padding:0 16px 28px;margin-top:-16px}
+        .see-more-btn{background:none;border:none;color:rgba(255,255,255,.45);padding:0;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:color .2s}
+        .see-more-btn:hover{color:rgba(255,255,255,.65)}
+
+        /* Footer */
+        .footer{padding:32px 16px 48px;text-align:center;background:#000}
+        .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4)}
+        .footer-links a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .15s}
+        .footer-links a:hover{color:rgba(255,255,255,.6)}
+        .footer-links span{color:rgba(255,255,255,.2)}
+        .home-bar{display:flex;justify-content:center;padding:12px 0 28px;background:#000}
+        .home-bar div{width:134px;height:5px;background:rgba(255,255,255,.3);border-radius:3px}
+
+        /* Toast */
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(44,44,46,.95);backdrop-filter:blur(20px);color:#fff;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;max-width:90vw}
+        .toast.show{opacity:1}
+
+        /* Love emoji */
+        @keyframes loveup{
+          0%{opacity:1;transform:translateY(0) translateX(0) scale(1)}
+          100%{opacity:0;transform:translateY(-80px) translateX(var(--tx)) scale(0)}
+        }
+        .love-emoji{position:fixed;font-size:20px;pointer-events:none;animation:loveup 1.2s cubic-bezier(.25,.46,.45,.94) forwards;z-index:999}
       `}</style>
     </>
   );

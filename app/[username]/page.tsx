@@ -1,226 +1,331 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function UserPage({ params }: { params: { username: string } }) {
-  const [likes, setLikes] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [floatingEmojis, setFloatingEmojis] = useState<Array<{ id: number; emoji: string }>>([]);
-  const [emojiCounter, setEmojiCounter] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState("Affiliate");
+  const [loveCount, setLoveCount] = useState(0);
+  const [selectedCat, setSelectedCat] = useState("affiliate");
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastShow, setToastShow] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const emojis = ["❤️", "😍", "🔥", "✨", "💯"];
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setToastShow(true);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastShow(false), 2500);
+  };
 
-  const handleLike = () => {
-    if (!isLiked) {
-      setLikes((l) => l + 1);
-      setIsLiked(true);
-      for (let i = 0; i < 3; i++) {
-        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-        const newId = emojiCounter + i;
-        setFloatingEmojis((prev) => [...prev, { id: newId, emoji: randomEmoji }]);
-        setTimeout(() => {
-          setFloatingEmojis((prev) => prev.filter((e) => e.id !== newId));
-        }, 2000);
-      }
-      setEmojiCounter((c) => c + 3);
+  const handleLove = (e: React.MouseEvent) => {
+    const newCount = loveCount + 1;
+    setLoveCount(newCount);
+    const emojiList = ["❤️","💕","��","💗","💝","💓","💞","💘"];
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const el = document.createElement("div");
+        el.className = "love-emoji";
+        el.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
+        const tx = (Math.random() * 0.7 + 0.3) * 140;
+        el.style.left = startX + "px";
+        el.style.top = startY + "px";
+        el.style.setProperty("--tx", tx + "px");
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1200);
+      }, i * 40);
     }
+    showToast(`❤️ ${newCount} orang menyukai Anesh!`);
   };
 
-  const categories = ["Affiliate", "Lelang", "Digital"];
+  const cats = [
+    { key: "affiliate", label: "Affiliate", cls: "c1" },
+    { key: "bid",       label: "Lelang",    cls: "c4" },
+    { key: "digital",   label: "Digital",   cls: "c3" },
+    { key: "template",  label: "Template",  cls: "c2" },
+    { key: "food",      label: "Delivery",  cls: "c5" },
+  ];
 
-  const products = {
-    Affiliate: [
-      { id: 1, title: "Shopee Affiliate", subtitle: "anesh.bio/shopee", icon: "🔗", bg: "#7c5cbf" },
-      { id: 2, title: "Tokopedia Affiliate", subtitle: "anesh.bio/tokped", icon: "🛒", bg: "#e05c1a" },
-      { id: 3, title: "TikTok Shop", subtitle: "anesh.bio/tiktokshop", icon: "💰", bg: "#2ecc71" },
-    ],
-    Lelang: [
-      { id: 1, title: "Nasi Ayam Geprek Spesial", subtitle: "anesh.bio/geprek", icon: "🍗", bg: "#e05c1a" },
-      { id: 2, title: "Mie Goreng Jawa Premium", subtitle: "anesh.bio/miegoreng", icon: "🍜", bg: "#2ecc71" },
-      { id: 3, title: "Brown Sugar Boba Milk", subtitle: "anesh.bio/boba", icon: "🧋", bg: "#ff9500" },
-    ],
-    Digital: [
-      { id: 1, title: "Digital Art Course", subtitle: "anesh.bio/artcourse", icon: "🎨", bg: "#667eea" },
-      { id: 2, title: "Design Templates", subtitle: "anesh.bio/templates", icon: "📐", bg: "#764ba2" },
-      { id: 3, title: "Consultation", subtitle: "anesh.bio/consult", icon: "💬", bg: "#0066ff" },
-    ],
+  const catData: Record<string, { title: string; items: Array<{ ico: string; emoji: string; name: string; url: string }> }> = {
+    affiliate: {
+      title: "Link Terpopuler",
+      items: [
+        { ico:"fi1", emoji:"🔗", name:"Shopee Affiliate",    url:"anesh.bio/shopee" },
+        { ico:"fi2", emoji:"🛍️", name:"Tokopedia Affiliate", url:"anesh.bio/tokped" },
+        { ico:"fi3", emoji:"💰", name:"TikTok Shop",         url:"anesh.bio/tiktokshop" },
+        { ico:"fi4", emoji:"📦", name:"Lazada Affiliate",    url:"anesh.bio/lazada" },
+        { ico:"fi5", emoji:"🎁", name:"Blibli Affiliate",    url:"anesh.bio/blibli" },
+        { ico:"fi1", emoji:"🏪", name:"Bukalapak Affiliate", url:"anesh.bio/bukalapak" },
+      ],
+    },
+    bid: {
+      title: "Lelang Aktif",
+      items: [
+        { ico:"fi1", emoji:"🎨", name:"Art Pack Neon Cityscape", url:"anesh.bio/lelang" },
+      ],
+    },
+    digital: {
+      title: "Produk Digital",
+      items: [
+        { ico:"fi1", emoji:"🔤", name:"Font Pack Retro Future", url:"anesh.bio/font" },
+        { ico:"fi3", emoji:"📱", name:"Mockup Bundle Vol.3",    url:"anesh.bio/mockup" },
+        { ico:"fi5", emoji:"⚡", name:"Icon Pack 500+",         url:"anesh.bio/icon" },
+        { ico:"fi2", emoji:"🖌️", name:"Brush Procreate Ink",   url:"anesh.bio/brush" },
+      ],
+    },
+    template: {
+      title: "Template & Preset",
+      items: [
+        { ico:"fi2", emoji:"📄", name:"Portofolio Canva Pro",    url:"anesh.bio/canva" },
+        { ico:"fi1", emoji:"📅", name:"Content Planner Notion",  url:"anesh.bio/notion" },
+        { ico:"fi4", emoji:"🌅", name:"Preset Golden Hour",      url:"anesh.bio/preset" },
+        { ico:"fi3", emoji:"🎬", name:"CapCut Pack Aesthetic",   url:"anesh.bio/capcut" },
+      ],
+    },
+    food: {
+      title: "Menu & Produk",
+      items: [
+        { ico:"fi1", emoji:"🍗", name:"Nasi Ayam Geprek Spesial", url:"anesh.bio/geprek" },
+        { ico:"fi3", emoji:"🍜", name:"Mie Goreng Jawa Premium",  url:"anesh.bio/miegoreng" },
+        { ico:"fi4", emoji:"🧋", name:"Brown Sugar Boba Milk",    url:"anesh.bio/boba" },
+        { ico:"fi2", emoji:"🥩", name:"Sate Ayam Madura",         url:"anesh.bio/sate" },
+      ],
+    },
   };
+
+  const current = catData[selectedCat];
+  const visibleItems = current.items.slice(0, 5);
+  const hasMore = current.items.length > 5;
 
   const Content = () => (
-    <div style={{ background: "#0d0d0d", minHeight: "100%" }}>
+    <div className="app">
       {/* Social Icons */}
-      <div style={{ padding: "16px 20px 10px", display: "flex", justifyContent: "center", gap: 22 }}>
-        {["f", "▶", "◎", "♪", "⊞", "✕"].map((icon, idx) => (
-          <a key={idx} href="#" style={{ fontSize: 17, color: "#ccc", textDecoration: "none" }}>
+      <div className="social-header">
+        {[
+          <svg key="fb" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>,
+          <svg key="yt" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff" stroke="#fff" strokeWidth="1.5"/></svg>,
+          <svg key="wa" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>,
+          <svg key="tt" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>,
+          <svg key="ig" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="#fff"/></svg>,
+          <svg key="x" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M20 4L4 20"/></svg>,
+        ].map((icon, idx) => (
+          <a key={idx} href="#" className="soc-link" onClick={(e) => { e.preventDefault(); showToast("Link dibuka!"); }}>
             {icon}
           </a>
         ))}
       </div>
 
       {/* Search */}
-      <div style={{ padding: "6px 16px 14px" }}>
-        <div style={{ position: "relative" }}>
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#555", fontSize: 14 }}>🔍</span>
-          <input
-            type="text"
-            placeholder="Cari link..."
-            style={{
-              width: "100%", padding: "10px 12px 10px 36px",
-              borderRadius: 12, border: "none",
-              background: "#1c1c1c", color: "#fff", fontSize: 14,
-              boxSizing: "border-box", outline: "none",
-            }}
-          />
-        </div>
+      <div className="search-box">
+        <span className="search-icon">🔍</span>
+        <input type="text" placeholder="Cari link..." />
       </div>
 
       {/* Profile Card */}
-      <div style={{ padding: "0 16px 16px" }}>
-        <div style={{
-          background: "#1c1c1c", borderRadius: 16, padding: "14px",
-          display: "flex", gap: 12, alignItems: "center",
-        }}>
-          <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: "#333" }}>
-            <img
-              src="https://ugc.production.linktr.ee/eba81421-5375-4371-a9b0-d6aabb91b3da_Cyborg-Male.jpeg?io=true&size=avatar-v3_0"
-              alt="Profile"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ color: "#fff", fontSize: 15, fontWeight: 700, margin: "0 0 4px" }}>Anesh Artnesh</h1>
-            <p style={{ color: "#888", fontSize: 12, margin: 0, lineHeight: 1.4 }}>
-              Digital creator passionate about art, design, and visu...
-            </p>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, flexShrink: 0, position: "relative" }}>
-            <button onClick={handleLike} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: 0, lineHeight: 1 }}>
-              {isLiked ? "❤️" : "🤍"}
-            </button>
-            <span style={{ color: "#888", fontSize: 11 }}>{likes}</span>
-            {floatingEmojis.map((item) => (
-              <span key={item.id} style={{
-                position: "absolute", bottom: "100%", left: "50%",
-                fontSize: 16, pointerEvents: "none",
-                animation: "float-up 2s ease-out forwards",
-              }}>{item.emoji}</span>
-            ))}
-          </div>
+      <div className="profile-card">
+        <img className="profile-avatar" src="https://pbs.twimg.com/profile_images/2042441264453599233/foTV-yAr_400x400.jpg" alt="pfp" />
+        <div className="profile-info">
+          <div className="profile-name">Anesh Artnesh</div>
+          <div className="profile-bio">Digital creator passionate about art, design, and visual storytelling</div>
+        </div>
+        <div className="love-section" onClick={handleLove}>
+          <svg className="love-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <span className="love-count">{loveCount}</span>
         </div>
       </div>
 
       {/* Categories */}
-      <div style={{ padding: "0 16px 16px", display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" }}>
-        {categories.map((cat) => (
-          <button key={cat} onClick={() => setSelectedCategory(cat)} style={{
-            padding: "10px 22px", borderRadius: 24, border: "none",
-            background: selectedCategory === cat
-              ? (cat === "Affiliate" ? "#2ecc71" : cat === "Lelang" ? "#ff9500" : "#0066ff")
-              : "#1c1c1c",
-            color: "#fff", fontSize: 14, fontWeight: 600,
-            cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
-          }}>
-            {cat}
-          </button>
+      <div className="cats">
+        {cats.map((cat) => (
+          <div
+            key={cat.key}
+            className={`cat ${cat.cls}${selectedCat === cat.key ? " cat-active" : ""}`}
+            onClick={() => setSelectedCat(cat.key)}
+          >
+            <span className="cat-name">{cat.label}</span>
+          </div>
         ))}
       </div>
 
-      {/* Products */}
-      <div style={{ padding: "0 16px 32px" }}>
-        <h2 style={{ color: "#fff", fontSize: 13, fontWeight: 700, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: 0.5 }}>
-          {selectedCategory === "Affiliate" ? "Link Terpopuler" : selectedCategory === "Lelang" ? "Menu & Produk" : "Digital Products"}
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {products[selectedCategory as keyof typeof products].map((product) => (
-            <a key={product.id} href="#" style={{
-              display: "flex", alignItems: "center", gap: 12,
-              padding: "10px 12px", background: "#1c1c1c",
-              borderRadius: 12, color: "#fff", textDecoration: "none",
-            }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: 10,
-                background: product.bg,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, flexShrink: 0,
-              }}>
-                {product.icon}
+      {/* Link List */}
+      <div className="fav-box">
+        <div className="fav-head">
+          <div className="fav-title">{current.title}</div>
+        </div>
+        <div className="fav-list">
+          {visibleItems.map((item) => (
+            <div key={item.name} className="fav-row">
+              <div className={`fav-ico ${item.ico}`}>{item.emoji}</div>
+              <div className="fav-info">
+                <div className="fav-name">{item.name}</div>
+                <div className="fav-url">{item.url}</div>
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ color: "#fff", fontSize: 14, fontWeight: 600, margin: "0 0 2px" }}>{product.title}</p>
-                <p style={{ color: "#4a9eff", fontSize: 11, margin: 0 }}>{product.subtitle}</p>
-              </div>
-              <button style={{
-                padding: "6px 16px", borderRadius: 20, border: "none",
-                background: "#0066ff", color: "#fff",
-                fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0,
-              }}>
-                Lihat
-              </button>
-            </a>
+              <button className="view-btn" onClick={() => showToast("Membuka link...")}>Lihat</button>
+            </div>
           ))}
         </div>
       </div>
+
+      {hasMore && (
+        <div className="see-more-container">
+          <button className="see-more-btn" onClick={() => showToast("Lihat semua link 🔗")}>
+            See More ({current.items.length - 5}+)
+          </button>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="footer">
+        <div className="footer-links">
+          {["Cookie Preferences","Report","Privacy","Explore","More from Yourlink"].map((link, i, arr) => (
+            <span key={link} style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <a href="#" onClick={(e) => e.preventDefault()}>{link}</a>
+              {i < arr.length - 1 && <span>•</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="home-bar"><div></div></div>
     </div>
   );
 
   return (
     <>
-      {/* Mobile: full screen */}
-      <div className="mobile-only">
-        <Content />
-      </div>
+      {/* Mobile */}
+      <div className="mobile-only"><Content /></div>
 
-      {/* Desktop: phone frame mockup */}
-      <div className="desktop-only" style={{
-        background: "#888888",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        paddingTop: 40,
-        paddingBottom: 40,
-      }}>
-        {/* Phone Frame */}
-        <div style={{
-          width: 375,
-          background: "#1a1a1a",
-          borderRadius: 52,
-          padding: "14px 8px",
-          boxShadow: "0 40px 100px rgba(0,0,0,0.6), inset 0 0 0 2px #444",
-          position: "relative",
-        }}>
-          {/* Notch */}
-          <div style={{
-            width: 126, height: 34,
-            background: "#1a1a1a",
-            borderRadius: 20,
-            margin: "0 auto 6px",
-            position: "relative", zIndex: 10,
-          }} />
-          {/* Screen */}
-          <div style={{
-            borderRadius: 44,
-            overflow: "hidden",
-            background: "#0d0d0d",
-            maxHeight: 760,
-            overflowY: "auto",
-          }}>
-            <Content />
+      {/* Desktop: phone frame */}
+      <div className="desktop-only">
+        <div className="desktop-frame">
+          <div className="phone-notch"></div>
+          <div className="phone-btn-vol"></div>
+          <div className="phone-btn-vol2"></div>
+          <div className="phone-btn-pwr"></div>
+          <div className="phone-screen">
+            <div className="phone-inner">
+              <Content />
+            </div>
           </div>
+        </div>
+        <div className="qr-panel">
+          <div className="qr-label">View on mobile</div>
+          <div style={{ width:100, height:100, background:"#f0f0f0", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"#999" }}>QR Code</div>
         </div>
       </div>
 
+      {/* Toast */}
+      <div className={`toast${toastShow ? " show" : ""}`}>{toastMsg}</div>
+
       <style>{`
-        .mobile-only { display: none; }
-        .desktop-only { display: block; }
-        @media (max-width: 768px) {
-          .mobile-only { display: block; }
-          .desktop-only { display: none; }
+        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+        .mobile-only{display:none}
+        .desktop-only{display:block}
+        @media(max-width:768px){
+          .mobile-only{display:block}
+          .desktop-only{display:none}
         }
-        @keyframes float-up {
-          0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-          100% { opacity: 0; transform: translateX(-50%) translateY(-50px); }
+
+        /* ===== DESKTOP FRAME ===== */
+        @media(min-width:769px){
+          .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
+          .desktop-frame{position:relative;width:393px;flex-shrink:0}
+          .phone-screen{width:393px;height:820px;border-radius:50px;overflow:hidden;box-shadow:0 0 0 10px #1a1a1a,0 0 0 12px #3a3a3a,0 40px 80px rgba(0,0,0,.5);position:relative;background:#000}
+          .phone-inner{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+          .phone-inner::-webkit-scrollbar{display:none}
+          .phone-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#1a1a1a;border-radius:20px;z-index:100;pointer-events:none}
+          .phone-btn-vol{position:absolute;left:-12px;top:140px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-vol2{position:absolute;left:-12px;top:186px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-pwr{position:absolute;right:-12px;top:160px;width:4px;height:60px;background:#2a2a2a;border-radius:0 2px 2px 0}
+          .qr-panel{position:fixed;bottom:28px;right:28px;background:#fff;border-radius:16px;padding:14px 16px 12px;box-shadow:0 4px 24px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:9999}
+          .qr-label{font-size:11px;font-weight:600;color:#333;letter-spacing:.02em}
+          .toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);max-width:340px}
         }
+
+        /* ===== APP ===== */
+        .app{width:100%;max-width:430px;margin:0 auto;background:#000;min-height:100vh;position:relative;overflow-x:hidden;font-family:-apple-system,'Helvetica Neue',sans-serif}
+
+        /* Social Icons */
+        .social-header{display:flex;justify-content:center;align-items:center;gap:16px;padding:56px 20px 16px;background:#000;flex-wrap:wrap}
+        .soc-link{display:flex;align-items:center;justify-content:center;transition:transform .2s ease,opacity .2s;text-decoration:none}
+        .soc-link:hover{transform:scale(1.15)}
+        .soc-link:active{transform:scale(.88);opacity:.7}
+
+        /* Search */
+        .search-box{margin:0 16px 28px;background:#1c1c1e;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+        .search-box input{flex:1;background:transparent;border:none;color:#fff;font-size:15px;outline:none;font-family:inherit}
+        .search-box input::placeholder{color:#636366}
+        .search-icon{color:#636366;font-size:18px}
+
+        /* Profile Card */
+        .profile-card{margin:0 16px 28px;background:#1c1c1e;border-radius:20px;padding:0 16px 0 0;display:flex;align-items:center;gap:8px;height:100px;overflow:hidden}
+        .profile-avatar{width:80px;height:80px;border-radius:16px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.1);margin:0 12px}
+        .profile-info{flex:1;min-width:0;padding-right:8px}
+        .profile-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-0.3px}
+        .profile-bio{font-size:13px;color:#636366;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+        .love-section{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;margin-right:20px;flex-shrink:0}
+        .love-icon{width:24px;height:24px;display:block;fill:#636366;transition:fill .2s,transform .2s}
+        .love-icon:hover{fill:#FF375F;transform:scale(1.2)}
+        .love-count{font-size:11px;font-weight:400;color:#636366}
+
+        /* Categories */
+        .cats{display:flex;gap:12px;padding:4px 16px 32px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+        .cats::-webkit-scrollbar{display:none}
+        .cat{width:120px;height:60px;border-radius:16px;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;transition:transform 0.2s;user-select:none;border:1.5px solid transparent;scroll-snap-align:center}
+        .cat:active{transform:scale(.95)}
+        .cat-active{border-color:rgba(255,255,255,.4);box-shadow:0 0 14px rgba(255,255,255,.12)}
+        .cat-name{font-size:15px;font-weight:700;color:#fff;position:relative;z-index:1;text-align:center}
+        .c1{background:linear-gradient(135deg,#34D058,#1a9e3f)}
+        .c2{background:linear-gradient(135deg,#FF9500,#FF5E00)}
+        .c3{background:linear-gradient(135deg,#1E90FF,#0055CC)}
+        .c4{background:linear-gradient(135deg,#FF6B35,#E8001D)}
+        .c5{background:linear-gradient(135deg,#AF52DE,#7B2FBE)}
+
+        /* Fav Box */
+        .fav-box{margin:0 16px 28px;background:#1c1c1e;border-radius:16px;overflow:hidden}
+        .fav-head{padding:16px 16px 12px}
+        .fav-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+        .fav-list{padding:0 16px 12px}
+        .fav-row{display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer;border-radius:12px;transition:all .2s;border-bottom:.5px solid transparent}
+        .fav-row:hover{background:rgba(255,255,255,.06);padding:14px 8px;border-bottom-color:rgba(255,255,255,.08)}
+        .fav-ico{width:56px;height:56px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+        .fi1{background:linear-gradient(135deg,#5E5CE6,#BF5AF2)}
+        .fi2{background:linear-gradient(135deg,#FF9F0A,#FF375F)}
+        .fi3{background:linear-gradient(135deg,#30D158,#0A84FF)}
+        .fi4{background:linear-gradient(135deg,#FF9F0A,#FF6B00)}
+        .fi5{background:linear-gradient(135deg,#BF5AF2,#5E5CE6)}
+        .fav-info{flex:1;min-width:0}
+        .fav-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;letter-spacing:-0.2px}
+        .fav-url{font-size:12px;color:#0A84FF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
+        .view-btn{background:linear-gradient(135deg,#0A84FF,#0066CC);border:none;color:#fff;font-size:14px;font-weight:600;padding:8px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0;box-shadow:0 2px 8px rgba(10,132,255,.2)}
+        .view-btn:active{transform:scale(.95);opacity:.8}
+
+        /* See More */
+        .see-more-container{display:flex;justify-content:center;padding:0 16px 28px;margin-top:-16px}
+        .see-more-btn{background:none;border:none;color:rgba(255,255,255,.45);padding:0;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:color .2s}
+        .see-more-btn:hover{color:rgba(255,255,255,.65)}
+
+        /* Footer */
+        .footer{padding:32px 16px 48px;text-align:center;background:#000}
+        .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4)}
+        .footer-links a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .15s}
+        .footer-links a:hover{color:rgba(255,255,255,.6)}
+        .footer-links span{color:rgba(255,255,255,.2)}
+        .home-bar{display:flex;justify-content:center;padding:12px 0 28px;background:#000}
+        .home-bar div{width:134px;height:5px;background:rgba(255,255,255,.3);border-radius:3px}
+
+        /* Toast */
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(44,44,46,.95);backdrop-filter:blur(20px);color:#fff;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;max-width:90vw}
+        .toast.show{opacity:1}
+
+        /* Love emoji */
+        @keyframes loveup{
+          0%{opacity:1;transform:translateY(0) translateX(0) scale(1)}
+          100%{opacity:0;transform:translateY(-80px) translateX(var(--tx)) scale(0)}
+        }
+        .love-emoji{position:fixed;font-size:20px;pointer-events:none;animation:loveup 1.2s cubic-bezier(.25,.46,.45,.94) forwards;z-index:999}
       `}</style>
     </>
   );
