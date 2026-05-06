@@ -231,17 +231,17 @@ export default function UserPage({ params }: { params: { username: string } }) {
         /* ===== DESKTOP FRAME ===== */
         @media(min-width:769px){
           .desktop-only{background:#b0b0b0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
-          .desktop-frame{position:relative;width:393px;flex-shrink:0}
-          .phone-screen{width:393px;height:820px;border-radius:50px;overflow:hidden;box-shadow:0 0 0 10px #1a1a1a,0 0 0 12px #3a3a3a,0 40px 80px rgba(0,0,0,.5);position:relative;background:#000}
+          .desktop-frame{position:relative;width:450px;flex-shrink:0}
+          .phone-screen{width:450px;height:900px;border-radius:54px;overflow:hidden;box-shadow:0 0 0 12px #1a1a1a,0 0 0 14px #3a3a3a,0 50px 100px rgba(0,0,0,.6);position:relative;background:#000}
           .phone-inner{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
           .phone-inner::-webkit-scrollbar{display:none}
-          .phone-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#1a1a1a;border-radius:20px;z-index:100;pointer-events:none}
-          .phone-btn-vol{position:absolute;left:-12px;top:140px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
-          .phone-btn-vol2{position:absolute;left:-12px;top:186px;width:4px;height:36px;background:#2a2a2a;border-radius:2px 0 0 2px}
-          .phone-btn-pwr{position:absolute;right:-12px;top:160px;width:4px;height:60px;background:#2a2a2a;border-radius:0 2px 2px 0}
-          .qr-panel{position:fixed;bottom:28px;right:28px;background:#fff;border-radius:16px;padding:14px 16px 12px;box-shadow:0 4px 24px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:9999}
-          .qr-label{font-size:11px;font-weight:600;color:#333;letter-spacing:.02em}
-          .toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);max-width:340px}
+          .phone-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:140px;height:38px;background:#1a1a1a;border-radius:22px;z-index:100;pointer-events:none}
+          .phone-btn-vol{position:absolute;left:-14px;top:160px;width:5px;height:42px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-vol2{position:absolute;left:-14px;top:212px;width:5px;height:42px;background:#2a2a2a;border-radius:2px 0 0 2px}
+          .phone-btn-pwr{position:absolute;right:-14px;top:180px;width:5px;height:70px;background:#2a2a2a;border-radius:0 2px 2px 0}
+          .qr-panel{position:fixed;bottom:32px;right:32px;background:#fff;border-radius:18px;padding:16px 18px 14px;box-shadow:0 6px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:9999}
+          .qr-label{font-size:12px;font-weight:600;color:#333;letter-spacing:.02em}
+          .toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);max-width:380px}
         }
 
         /* ===== APP ===== */
