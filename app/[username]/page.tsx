@@ -378,35 +378,48 @@ export default function UserPage({ params }: { params: { username: string } }) {
       </div>
 
       <div className="home-bar"><div></div></div>
+
+      {/* Settings bar — owner only */}
+      {isOwner && (
+        <div className="settings-bar">
+          <div className="settings-bar-inner">
+            <button
+              className={`settings-tab${!editMode ? " settings-tab-active" : ""}`}
+              onClick={() => { setEditMode(false); showToast("Mode Live aktif 👁"); }}
+            >
+              <span className="settings-dot" />
+              Live
+            </button>
+            <div className="settings-divider" />
+            <button
+              className={`settings-tab${editMode ? " settings-tab-active" : ""}`}
+              onClick={() => { setEditMode(true); showToast("Mode Edit aktif ✏️"); }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Edit
+            </button>
+            {editMode && (
+              <>
+                <div className="settings-divider" />
+                <button
+                  className="settings-save"
+                  onClick={() => { setEditMode(false); showToast("Tersimpan ✅"); }}
+                >
+                  Simpan
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 
   return (
     <>
-      {/* Live / Edit toggle — only visible to owner */}
-      {isOwner && (
-        <div className="mode-bar">
-          <button
-            className={`mode-btn${!editMode ? " mode-btn-active" : ""}`}
-            onClick={() => { setEditMode(false); showToast("Mode Live aktif 👁"); }}
-          >
-            <span className="mode-dot mode-dot-live" />
-            Live
-          </button>
-          <button
-            className={`mode-btn${editMode ? " mode-btn-active" : ""}`}
-            onClick={() => { setEditMode(true); showToast("Mode Edit aktif ✏️"); }}
-          >
-            ✏️ Edit
-          </button>
-          {editMode && (
-            <button className="mode-save-btn" onClick={() => { setEditMode(false); showToast("Perubahan disimpan ✅"); }}>
-              Simpan
-            </button>
-          )}
-        </div>
-      )}
-
       {/* Mobile */}
       <div className="mobile-only"><Content /></div>
 
@@ -541,14 +554,19 @@ export default function UserPage({ params }: { params: { username: string } }) {
         .love-emoji{position:fixed;font-size:20px;pointer-events:none;animation:loveup 1.2s cubic-bezier(.25,.46,.45,.94) forwards;z-index:999}
 
         /* ===== LIVE / EDIT MODE BAR ===== */
-        .mode-bar{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:6px;background:rgba(28,28,30,.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 6px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
-        .mode-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
-        .mode-btn:hover{color:#fff}
-        .mode-btn-active{background:rgba(255,255,255,.12);color:#fff}
-        .mode-dot{width:7px;height:7px;border-radius:50%;background:#30D158;box-shadow:0 0 6px #30D158;display:inline-block}
-        .mode-save-btn{background:linear-gradient(135deg,#30D158,#0A84FF);border:none;color:#fff;font-size:13px;font-weight:700;padding:6px 16px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:4px}
-        .mode-save-btn:hover{opacity:.85}
-        .mode-save-btn:active{transform:scale(.95)}
+        .mode-bar{display:none}
+
+        /* ===== SETTINGS BAR (bottom, owner only) ===== */
+        .settings-bar{display:flex;justify-content:center;padding:12px 16px 20px;background:#000}
+        .settings-bar-inner{display:flex;align-items:center;gap:4px;background:rgba(28,28,30,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 8px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+        .settings-tab{background:transparent;border:none;color:rgba(255,255,255,.45);font-size:13px;font-weight:600;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+        .settings-tab:hover{color:rgba(255,255,255,.75)}
+        .settings-tab-active{background:rgba(255,255,255,.12);color:#fff}
+        .settings-dot{width:7px;height:7px;border-radius:50%;background:#30D158;box-shadow:0 0 6px #30D158;display:inline-block;flex-shrink:0}
+        .settings-divider{width:1px;height:18px;background:rgba(255,255,255,.12);flex-shrink:0}
+        .settings-save{background:linear-gradient(135deg,#30D158,#0A84FF);border:none;color:#fff;font-size:13px;font-weight:700;padding:7px 18px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s}
+        .settings-save:hover{opacity:.85}
+        .settings-save:active{transform:scale(.95)}
 
         /* ===== EDIT MODE STYLES ===== */
         .profile-card-edit{border:1.5px dashed rgba(255,255,255,.2);background:#1c1c1e}
