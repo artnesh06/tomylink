@@ -23,7 +23,7 @@ type Category = {
   emoji: string;
 };
 
-export default function UserPage({ params }: { params: { username: string } }) {
+export default function UserPage(_props: { params: Promise<{ username: string }> }) {
   const isOwner = true;
   const [editMode, setEditMode] = useState(false);
   const [selectedCat, setSelectedCat] = useState("link");
