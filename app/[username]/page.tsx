@@ -510,8 +510,8 @@ export default function UserPage({ params }: { params: { username: string } }) {
         .fi4{background:linear-gradient(135deg,#FF9F0A,#FF6B00)}
         .fi5{background:linear-gradient(135deg,#BF5AF2,#5E5CE6)}
         .fav-info{flex:1;min-width:0}
-        .fav-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;letter-spacing:-0.2px}
-        .fav-url{font-size:12px;color:#0A84FF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
+        .fav-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;letter-spacing:-0.2px;display:block}
+        .fav-url{font-size:12px;color:#0A84FF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8;display:block}
         .view-btn{background:linear-gradient(135deg,#0A84FF,#0066CC);border:none;color:#fff;font-size:14px;font-weight:600;padding:8px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0;box-shadow:0 2px 8px rgba(10,132,255,.2)}
         .view-btn:active{transform:scale(.95);opacity:.8}
 
